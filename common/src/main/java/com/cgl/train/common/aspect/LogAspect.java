@@ -1,4 +1,4 @@
-package com.cgl.train.member.aspect;
+package com.cgl.train.common.aspect;
 
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;

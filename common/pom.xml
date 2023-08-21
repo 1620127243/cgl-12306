@@ -8,7 +8,8 @@
         <artifactId>train</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>train-member</artifactId>
+
+    <artifactId>common</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
