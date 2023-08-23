@@ -55,13 +55,13 @@ export default defineComponent({
     });
 
     const sendCode = () => {
-      axios.post("/member/member/send-code", {
+      axios.post("/member/member/sendMsg", {
         mobile: loginForm.mobile
       }).then(response => {
         let data = response.data;
         if (data.success) {
           notification.success({ description: '发送验证码成功！' });
-          loginForm.code = "8888";
+          loginForm.code = data.content;
         } else {
           notification.error({ description: data.message });
         }
@@ -69,12 +69,12 @@ export default defineComponent({
     };
 
     const login = () => {
-      axios.post("/member/member/login", loginForm).then((response) => {
+      axios.post("/member/member/login\n", loginForm).then((response) => {
         let data = response.data;
         if (data.success) {
           notification.success({ description: '登录成功！' });
           // 登录成功，跳到控台主页
-          router.push("/welcome");
+          router.push("/");
           store.commit("setMember", data.content);
         } else {
           notification.error({ description: data.message });

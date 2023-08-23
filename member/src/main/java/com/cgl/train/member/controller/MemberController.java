@@ -6,7 +6,6 @@ import com.cgl.train.member.req.MemberSendMsgReq;
 import com.cgl.train.member.resp.MemberLoginResp;
 import com.cgl.train.member.service.MemberService;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,13 +27,13 @@ public class MemberController {
 //        return commonResp;
 //    }
     @PostMapping("/sendMsg")
-    public CommonResp<String> sentMsg(@Valid @RequestBody MemberSendMsgReq req, HttpSession session){
-        String code=memberService.sendMsg(req,session);
+    public CommonResp<String> sentMsg(@Valid @RequestBody MemberSendMsgReq req){
+        String code=memberService.sendMsg(req);
         return new CommonResp<>(code);
     }
     @PostMapping("/login")
-    public CommonResp<MemberLoginResp> login(@Valid @RequestBody MemberLoginReq req,HttpSession session){
-        MemberLoginResp resp=memberService.login(req,session);
+    public CommonResp<MemberLoginResp> login(@Valid @RequestBody MemberLoginReq req){
+        MemberLoginResp resp=memberService.login(req);
         return new CommonResp<>(resp);
 
     }
