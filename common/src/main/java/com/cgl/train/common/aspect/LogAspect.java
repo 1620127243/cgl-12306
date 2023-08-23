@@ -6,6 +6,7 @@ import com.alibaba.fastjson.support.spring.PropertyPreFilters;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -53,7 +54,7 @@ public class LogAspect {
         for (int i = 0; i < args.length; i++) {
             if (args[i] instanceof ServletRequest
                     || args[i] instanceof ServletResponse
-                    || args[i] instanceof MultipartFile) {
+                    || args[i] instanceof MultipartFile || args[i] instanceof HttpSession) {
                 continue;
             }
             arguments[i] = args[i];

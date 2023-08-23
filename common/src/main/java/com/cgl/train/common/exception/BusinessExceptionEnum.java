@@ -1,8 +1,9 @@
 package com.cgl.train.common.exception;
 
 public enum BusinessExceptionEnum {
-    MEMBER_MOBILE_EXIST("手机号已存在");
-
+    MEMBER_MOBILE_EXIST("手机号已存在"),
+    MEMBER_MOBILE_NOT_EXIST("手机号不存在"),
+    MEMBER_MOBILE_CODE_ERROR("验证码错误");
     private String desc;
 
     BusinessExceptionEnum(String desc) {

@@ -2,7 +2,24 @@ GET http://localhost:8000/member/member/count
 Accept: application/json
 
 ###
- POST http://localhost:8000/member/member/register
-Content-Type: application/x-www-form-urlencoded
+# POST http://localhost:8000/member/member/register
+#Content-Type: application/x-www-form-urlencoded
+#
+#mobile=13870988031
+#
+####
+POST http://localhost:8000/member/member/sendMsg
+Content-Type: application/json
 
+{
+  "mobile": "13870988030"
+}
+###
+POST http://localhost:8000/member/member/login
+Content-Type: application/json
 
+{
+  "mobile": "13870988030",
+  "code": "1my4"
+}
+###
