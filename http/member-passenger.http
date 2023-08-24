@@ -1,0 +1,18 @@
+POST http://localhost:8000/member/passenger/save
+Content-Type: application/json
+token:{{token}}
+
+{
+  "name": "李四",
+  "idCard": "1235153414156",
+  "type": "1"
+
+}
+
+
+###
+GET http://localhost:8000/member/passenger/query-list?page=1&size=2
+Accept: application/json
+token:{{token}}
+
+###

@@ -14,12 +14,23 @@ Content-Type: application/json
 {
   "mobile": "13870988030"
 }
+
+> {%
+    client.log(JSON.stringify(response.body.content));
+    client.global.set("code", response.body.content);
+%}
 ###
 POST http://localhost:8000/member/member/login
 Content-Type: application/json
 
 {
   "mobile": "13870988030",
-  "code": "bw8o"
+  "code": "{{code}}"
 }
+
+> {%
+    client.log(JSON.stringify(response.body));
+    client.log(JSON.stringify(response.body.content.token));
+    client.global.set("token", response.body.content.token);
+%}
 ###

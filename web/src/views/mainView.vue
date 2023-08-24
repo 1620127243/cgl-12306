@@ -16,8 +16,6 @@ import {defineComponent} from 'vue';
 import TheHeaderView from "@/components/the-header";
 import TheSiderView from "@/components/the-sider";
 
-import axios from 'axios';
-import { notification } from 'ant-design-vue';
 export default defineComponent({
   components: {
     TheSiderView,
