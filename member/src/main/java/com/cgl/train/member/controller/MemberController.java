@@ -1,6 +1,6 @@
 package com.cgl.train.member.controller;
 
-import com.cgl.train.common.response.CommonResp;
+import com.cgl.train.common.resp.CommonResp;
 import com.cgl.train.member.req.MemberLoginReq;
 import com.cgl.train.member.req.MemberSendMsgReq;
 import com.cgl.train.member.resp.MemberLoginResp;

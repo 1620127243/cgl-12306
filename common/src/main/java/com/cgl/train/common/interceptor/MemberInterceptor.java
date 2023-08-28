@@ -4,7 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.cgl.train.common.context.LoginMemberContext;
-import com.cgl.train.common.response.MemberLoginResp;
+import com.cgl.train.common.resp.MemberLoginResp;
 import com.cgl.train.common.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

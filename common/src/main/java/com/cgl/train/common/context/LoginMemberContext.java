@@ -1,7 +1,7 @@
 package com.cgl.train.common.context;
 
 
-import com.cgl.train.common.response.MemberLoginResp;
+import com.cgl.train.common.resp.MemberLoginResp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

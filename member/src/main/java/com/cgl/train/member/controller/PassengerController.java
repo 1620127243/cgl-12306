@@ -1,8 +1,8 @@
 package com.cgl.train.member.controller;
 
 import com.cgl.train.common.context.LoginMemberContext;
-import com.cgl.train.common.response.CommonResp;
-import com.cgl.train.common.response.PageResp;
+import com.cgl.train.common.resp.CommonResp;
+import com.cgl.train.common.resp.PageResp;
 import com.cgl.train.member.req.PassengerQueryReq;
 import com.cgl.train.member.req.PassengerSaveReq;
 import com.cgl.train.member.resp.PassengerQueryResp;

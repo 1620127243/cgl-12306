@@ -1,7 +1,7 @@
 package com.cgl.train.common.controller;
 
 import com.cgl.train.common.exception.BusinessException;
-import com.cgl.train.common.response.CommonResp;
+import com.cgl.train.common.resp.CommonResp;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,7 @@ public class ControllerExceptionHandler {
         CommonResp commonResp=new CommonResp();
         LOG.error("系统异常:",e);
         commonResp.setSuccess(false);
-        commonResp.setContent("系统出现异常，请联系管理员");
+        commonResp.setMessage("系统出现异常，请联系管理员");
         return commonResp;
     }
     /**
@@ -42,7 +42,7 @@ public class ControllerExceptionHandler {
         CommonResp commonResp=new CommonResp();
         LOG.error("业务异常:{}",e.getE().getDesc());
         commonResp.setSuccess(false);
-        commonResp.setContent(e.getE().getDesc());
+        commonResp.setMessage(e.getE().getDesc());
         return commonResp;
     }
     /**

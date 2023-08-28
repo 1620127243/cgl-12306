@@ -4,7 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.ObjectUtil;
 import com.cgl.train.common.context.LoginMemberContext;
-import com.cgl.train.common.response.PageResp;
+import com.cgl.train.common.resp.PageResp;
 import com.cgl.train.common.util.SnowUtil;
 import com.cgl.train.member.domain.Passenger;
 import com.cgl.train.member.domain.PassengerExample;
