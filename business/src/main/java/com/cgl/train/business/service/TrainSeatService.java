@@ -34,6 +34,7 @@ public class TrainSeatService {
     @Resource
     private TrainCarriageService trainCarriageService;
 
+
     public void save(TrainSeatSaveReq req) {
         DateTime now = DateTime.now();
         TrainSeat trainSeat = BeanUtil.copyProperties(req, TrainSeat.class);
@@ -78,7 +79,12 @@ public class TrainSeatService {
     public void delete(Long id) {
         trainSeatMapper.deleteByPrimaryKey(id);
     }
-    @Transactional
+    public void deleteByTrainCodeAndCarriageIndex(String trainCode,Integer index){
+        TrainSeatExample trainSeatExample=new TrainSeatExample();
+        trainSeatExample.createCriteria().andTrainCodeEqualTo(trainCode).andCarriageIndexEqualTo(index);
+        trainSeatMapper.deleteByExample(trainSeatExample);
+
+    }    @Transactional
     public void genTrainSeat(String trainCode){
         DateTime now = DateTime.now();
         //清空当前车次下的所有座位记录
@@ -125,5 +131,12 @@ public class TrainSeatService {
         TrainSeatExample.Criteria criteria = trainSeatExample.createCriteria();
         criteria.andTrainCodeEqualTo(trainCode);
         return trainSeatMapper.selectByExample(trainSeatExample);
+    }
+    public void deleteByTrainCode(String trainCode){
+
+        TrainSeatExample trainSeatExample = new TrainSeatExample();
+        trainSeatExample.createCriteria().andTrainCodeEqualTo(trainCode);
+        trainSeatMapper.deleteByExample(trainSeatExample);
+
     }
 }

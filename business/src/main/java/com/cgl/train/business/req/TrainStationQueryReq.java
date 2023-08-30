@@ -12,9 +12,11 @@ public class TrainStationQueryReq extends PageReq {
     public void setTrainCode(String trainCode) {
         this.trainCode = trainCode;
     }
+
     @Override
     public String toString() {
         return "TrainStationQueryReq{" +
-                "} " + super.toString();
+                "trainCode='" + trainCode + '\'' +
+                '}';
     }
 }

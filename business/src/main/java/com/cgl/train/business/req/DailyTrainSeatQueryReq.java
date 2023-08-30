@@ -2,7 +2,8 @@ package com.cgl.train.business.req;
 
 import com.cgl.train.common.req.PageReq;
 
-public class TrainCarriageQueryReq extends PageReq {
+public class DailyTrainSeatQueryReq extends PageReq {
+
     private String trainCode;
 
     public String getTrainCode() {
@@ -15,8 +16,8 @@ public class TrainCarriageQueryReq extends PageReq {
 
     @Override
     public String toString() {
-        return "TrainCarriageQueryReq{" +
+        return "DailyTrainSeatQueryReq{" +
                 "trainCode='" + trainCode + '\'' +
-                '}';
+                "} " + super.toString();
     }
 }

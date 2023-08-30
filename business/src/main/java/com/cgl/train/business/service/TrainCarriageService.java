@@ -4,22 +4,23 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.ObjectUtil;
-import com.cgl.train.business.enums.SeatColEnum;
-import com.cgl.train.common.exception.BusinessException;
-import com.cgl.train.common.exception.BusinessExceptionEnum;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
-import com.cgl.train.common.resp.PageResp;
-import com.cgl.train.common.util.SnowUtil;
 import com.cgl.train.business.domain.TrainCarriage;
 import com.cgl.train.business.domain.TrainCarriageExample;
+import com.cgl.train.business.enums.SeatColEnum;
 import com.cgl.train.business.mapper.TrainCarriageMapper;
 import com.cgl.train.business.req.TrainCarriageQueryReq;
 import com.cgl.train.business.req.TrainCarriageSaveReq;
 import com.cgl.train.business.resp.TrainCarriageQueryResp;
+import com.cgl.train.common.exception.BusinessException;
+import com.cgl.train.common.exception.BusinessExceptionEnum;
+import com.cgl.train.common.resp.PageResp;
+import com.cgl.train.common.util.SnowUtil;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,6 +32,16 @@ public class TrainCarriageService {
 
     @Resource
     private TrainCarriageMapper trainCarriageMapper;
+    @Lazy
+    @Resource
+    private DailyTrainCarriageService dailyTrainCarriageService;
+    @Lazy
+    @Resource
+    private DailyTrainSeatService dailyTrainSeatService;
+    @Lazy
+    @Resource
+    private TrainSeatService trainSeatService;
+
 
     public void save(TrainCarriageSaveReq req) {
         DateTime now = DateTime.now();
@@ -95,6 +106,11 @@ public class TrainCarriageService {
 
 
     public void delete(Long id) {
+        TrainCarriage trainCarriage=trainCarriageMapper.selectByPrimaryKey(id);
+        dailyTrainCarriageService.deleteByTrainCodeAndCarriageIndex(trainCarriage.getTrainCode(), trainCarriage.getIndex());
+        dailyTrainSeatService.deleteByTrainCodeAndCarriageIndex(trainCarriage.getTrainCode(), trainCarriage.getIndex());
+
+        trainSeatService.deleteByTrainCodeAndCarriageIndex(trainCarriage.getTrainCode(), trainCarriage.getIndex());
         trainCarriageMapper.deleteByPrimaryKey(id);
     }
     public List<TrainCarriage> selectByTrainCode(String trainCode){
@@ -103,5 +119,12 @@ public class TrainCarriageService {
         TrainCarriageExample.Criteria criteria = trainCarriageExample.createCriteria();
         criteria.andTrainCodeEqualTo(trainCode);
         return trainCarriageMapper.selectByExample(trainCarriageExample);
+    }
+    public void deleteByTrainCode(String trainCode){
+
+        TrainCarriageExample trainCarriageExam=new TrainCarriageExample();
+        trainCarriageExam.createCriteria().andTrainCodeEqualTo(trainCode);
+        trainCarriageMapper.deleteByExample(trainCarriageExam);
+
     }
 }

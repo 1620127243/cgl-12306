@@ -19,6 +19,7 @@ import com.github.pagehelper.PageInfo;
 import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +32,21 @@ public class TrainService {
 
     @Resource
     private TrainMapper trainMapper;
-
+    @Resource
+    private TrainStationService trainStationService;
+    @Resource
+    private TrainCarriageService trainCarriageService;
+    @Resource
+    private TrainSeatService trainSeatService;
+    @Lazy
+    @Resource
+    private DailyTrainService dailyTrainService;
+    @Resource
+    private DailyTrainStationService dailyTrainStationService;
+    @Resource
+    private DailyTrainCarriageService dailyTrainCarriageService;
+    @Resource
+    private DailyTrainSeatService dailyTrainSeatService;
     public void save(TrainSaveReq req) {
         DateTime now = DateTime.now();
         Train train = BeanUtil.copyProperties(req, Train.class);
@@ -86,6 +101,16 @@ public class TrainService {
 
 
     public void delete(Long id) {
+        //删除车厢、车座相关信息
+        Train train=trainMapper.selectByPrimaryKey(id);
+        dailyTrainService.deleteByTrainCode(train.getCode());
+        dailyTrainStationService.deleteByTrainCode(train.getCode());
+        dailyTrainCarriageService.deleteByTrainCode(train.getCode());
+        dailyTrainSeatService.deleteByTrainCode(train.getCode());
+
+        trainStationService.deleteByTrainCode(train.getCode());
+        trainCarriageService.deleteByTrainCode(train.getCode());
+        trainSeatService.deleteByTrainCode(train.getCode());
         trainMapper.deleteByPrimaryKey(id);
     }
 
