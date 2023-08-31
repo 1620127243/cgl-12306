@@ -52,7 +52,6 @@ public class TrainCarriageService {
 
         TrainCarriage trainCarriage = BeanUtil.copyProperties(req, TrainCarriage.class);
         if (ObjectUtil.isNull(trainCarriage.getId())) {
-
             TrainCarriage trainCarriageDB=selectByUnique(req.getTrainCode(), req.getIndex());
             if(ObjectUtil.isNotEmpty(trainCarriageDB)){
                 throw new BusinessException(BusinessExceptionEnum.BUSINESS_TRAIN_CARRIAGE_INDEX_UNIQUE_ERROR);
@@ -61,6 +60,7 @@ public class TrainCarriageService {
             trainCarriage.setCreateTime(now);
             trainCarriage.setUpdateTime(now);
             trainCarriageMapper.insert(trainCarriage);
+            trainSeatService.genTrainSeat(req.getTrainCode());
         } else {
             trainCarriage.setUpdateTime(now);
             trainCarriageMapper.updateByPrimaryKey(trainCarriage);

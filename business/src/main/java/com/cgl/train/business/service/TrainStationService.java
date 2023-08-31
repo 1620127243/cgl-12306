@@ -30,8 +30,6 @@ public class TrainStationService {
 
     @Resource
     private TrainStationMapper trainStationMapper;
-    @Resource
-    private DailyTrainStationService dailyTrainStationService;
 
 
     public void save(TrainStationSaveReq req) {

@@ -84,7 +84,8 @@ public class TrainSeatService {
         trainSeatExample.createCriteria().andTrainCodeEqualTo(trainCode).andCarriageIndexEqualTo(index);
         trainSeatMapper.deleteByExample(trainSeatExample);
 
-    }    @Transactional
+    }
+    @Transactional
     public void genTrainSeat(String trainCode){
         DateTime now = DateTime.now();
         //清空当前车次下的所有座位记录
