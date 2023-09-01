@@ -17,7 +17,7 @@ public class LoginMemberFilter implements Ordered, GlobalFilter {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String path=exchange.getRequest().getURI().getPath();
         //排除不需要的拦截请求
-        if(path.contains("/admin")||path.contains("/member/member/login")||path.contains("/member/member/sendMsg")){
+        if(path.contains("/admin")||path.contains("/member/member/login")||path.contains("/member/member/sendMsg")||path.contains("/batch/hello")){
             LOG.info("不需要登录验证:{}",path);
             return chain.filter(exchange);
         }else {
