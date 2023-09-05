@@ -53,7 +53,7 @@
   <a-modal v-model:visible="visible" title="请核对以下信息"
            style="top: 50px; width: 800px"
            ok-text="确认" cancel-text="取消"
-           @ok="handleOk">
+           @ok="showFirstImageCodeModal">
     <div class="order-tickets">
       <a-row class="order-tickets-header" v-if="tickets.length > 0">
         <a-col :span="3">乘客</a-col>
@@ -104,6 +104,41 @@
       <!--最终选座：{{chooseSeatObj}}-->
     </div>
   </a-modal>
+
+  <!-- 第二层验证码 后端 -->
+  <a-modal v-model:visible="imageCodeModalVisible" :title="null" :footer="null" :closable="false"
+           style="top: 50px; width: 400px">
+    <p style="text-align: center; font-weight: bold; font-size: 18px">
+      使用服务端验证码削弱瞬时高峰<br/>
+      防止机器人刷票
+    </p>
+    <p>
+      <a-input v-model:value="imageCode" placeholder="图片验证码">
+        <template #suffix>
+          <img v-show="!!imageCodeSrc" :src="imageCodeSrc" alt="验证码" v-on:click="loadImageCode()"/>
+        </template>
+      </a-input>
+    </p>
+    <a-button danger block @click="handleOk">输入验证码后开始购票</a-button>
+  </a-modal>
+
+  <!-- 第一层验证码 纯前端 -->
+  <a-modal v-model:visible="firstImageCodeModalVisible" :title="null" :footer="null" :closable="false"
+           style="top: 50px; width: 400px">
+    <p style="text-align: center; font-weight: bold; font-size: 18px">
+      使用纯前端验证码削弱瞬时高峰<br/>
+      减小后端验证码接口的压力
+    </p>
+    <p>
+      <a-input v-model:value="firstImageCodeTarget" placeholder="验证码">
+        <template #suffix>
+          {{firstImageCodeSourceA}} + {{firstImageCodeSourceB}}
+        </template>
+      </a-input>
+    </p>
+    <a-button danger block @click="validFirstImageCode">提交验证码</a-button>
+  </a-modal>
+
   <a-modal v-model:visible="lineModalVisible" title="排队购票" :footer="null" :maskClosable="false" :closable="false"
            style="top: 50px; width: 400px">
     <div class="book-line">
@@ -115,7 +150,7 @@
       </div>
     </div>
     <br/>
-    <a-button type="danger" @click="onCancelOrder">取消购票</a-button>
+    <a-button danger @click="onCancelOrder">取消购票</a-button>
   </a-modal>
 </template>
 
@@ -174,7 +209,7 @@ export default defineComponent({
     const lineModalVisible = ref(false);
     const confirmOrderId = ref();
     const confirmOrderLineCount = ref(-1);
-    const lineNumber = ref(5);
+    const lineNumber = ref(0);
 
     // 勾选或去掉某个乘客时，在购票列表中加上或去掉一张表
     watch(() => passengerChecks.value, (newVal, oldVal)=>{
@@ -253,6 +288,7 @@ export default defineComponent({
           }
         }
       }
+      console.log("前端余票校验通过");
 
       // 判断是否支持选座，只有纯一等座和纯二等座支持选座
       // 先筛选出购票列表中的所有座位类型，比如四张表：[1, 1, 2, 2]
@@ -303,6 +339,11 @@ export default defineComponent({
     };
 
     const handleOk = () => {
+      if (Tool.isEmpty(imageCode.value)) {
+        notification.error({description: '验证码不能为空'});
+        return;
+      }
+
       console.log("选好的座位：", chooseSeatObj.value);
 
       // 设置每张票的座位
@@ -336,12 +377,135 @@ export default defineComponent({
         start: dailyTrainTicket.start,
         end: dailyTrainTicket.end,
         tickets: tickets.value,
+        imageCodeToken: imageCodeToken.value,
+        imageCode: imageCode.value,
         lineNumber: lineNumber.value
       }).then((response) => {
         let data = response.data;
         if (data.success) {
-          notification.success({description: "下单成功！"});
+          // notification.success({description: "下单成功！"});
           visible.value = false;
+          imageCodeModalVisible.value = false;
+          lineModalVisible.value = true;
+          confirmOrderId.value = data.content;
+          queryLineCount();
+        } else {
+          notification.error({description: data.message});
+        }
+      });
+    }
+
+    /* ------------------- 定时查询订单状态 --------------------- */
+    // 确认订单后定时查询
+    let queryLineCountInterval;
+
+    // 定时查询订单结果/排队数量
+    const queryLineCount = () => {
+      confirmOrderLineCount.value = -1;
+      queryLineCountInterval = setInterval(function () {
+        axios.get("/business/confirm-order/query-line-count/" + confirmOrderId.value).then((response) => {
+          let data = response.data;
+          if (data.success) {
+            let result = data.content;
+            switch (result) {
+              case -1 :
+                notification.success({description: "购票成功！"});
+                lineModalVisible.value = false;
+                clearInterval(queryLineCountInterval);
+                break;
+              case -2:
+                notification.error({description: "购票失败！"});
+                lineModalVisible.value = false;
+                clearInterval(queryLineCountInterval);
+                break;
+              case -3:
+                notification.error({description: "抱歉，没票了！"});
+                lineModalVisible.value = false;
+                clearInterval(queryLineCountInterval);
+                break;
+              default:
+                confirmOrderLineCount.value = result;
+            }
+          } else {
+            notification.error({description: data.message});
+          }
+        });
+      }, 500);
+
+    };
+
+    /* ------------------- 第二层验证码 --------------------- */
+    const imageCodeModalVisible = ref();
+    const imageCodeToken = ref();
+    const imageCodeSrc = ref();
+    const imageCode = ref();
+    /**
+     * 加载图形验证码
+     */
+    const loadImageCode = () => {
+      imageCodeToken.value = Tool.uuid(8);
+      imageCodeSrc.value = process.env.VUE_APP_SERVER + '/business/kaptcha/image-code/' + imageCodeToken.value;
+    };
+
+    const showImageCodeModal = () => {
+      loadImageCode();
+      imageCode.value=null
+      imageCodeModalVisible.value = true;
+    };
+
+    /* ------------------- 第一层验证码 --------------------- */
+    const firstImageCodeSourceA = ref();
+    const firstImageCodeSourceB = ref();
+    const firstImageCodeTarget = ref();
+    const firstImageCodeModalVisible = ref();
+
+    /**
+     * 加载第一层验证码
+     */
+    const loadFirstImageCode = () => {
+      // 获取1~10的数：Math.floor(Math.random()*10 + 1)
+      firstImageCodeSourceA.value = Math.floor(Math.random()*10 + 1) + 10;
+      firstImageCodeSourceB.value = Math.floor(Math.random()*10 + 1) + 20;
+    };
+
+    /**
+     * 显示第一层验证码弹出框
+     */
+    const showFirstImageCodeModal = () => {
+      loadFirstImageCode();
+      firstImageCodeModalVisible.value = true;
+    };
+
+    /**
+     * 校验第一层验证码
+     */
+    const validFirstImageCode = () => {
+      if (parseInt(firstImageCodeTarget.value) === parseInt(firstImageCodeSourceA.value + firstImageCodeSourceB.value)) {
+        // 第一层验证通过
+        firstImageCodeModalVisible.value = false;
+        firstImageCodeTarget.value=null;
+        showImageCodeModal();
+      } else {
+        notification.error({description: '验证码错误'});
+      }
+    };
+
+    /**
+     * 取消排队
+     */
+    const onCancelOrder = () => {
+      axios.get("/business/confirm-order/cancel/" + confirmOrderId.value).then((response) => {
+        let data = response.data;
+        if (data.success) {
+          let result = data.content;
+          if (result === 1) {
+            notification.success({description: "取消成功！"});
+            // 取消成功时，不用再轮询排队结果
+            clearInterval(queryLineCountInterval);
+            lineModalVisible.value = false;
+          } else {
+            notification.error({description: "取消失败！"});
+          }
         } else {
           notification.error({description: data.message});
         }
@@ -366,9 +530,22 @@ export default defineComponent({
       chooseSeatObj,
       SEAT_COL_ARRAY,
       handleOk,
+      imageCodeToken,
+      imageCodeSrc,
+      imageCode,
+      showImageCodeModal,
+      imageCodeModalVisible,
+      loadImageCode,
+      firstImageCodeSourceA,
+      firstImageCodeSourceB,
+      firstImageCodeTarget,
+      firstImageCodeModalVisible,
+      showFirstImageCodeModal,
+      validFirstImageCode,
       lineModalVisible,
       confirmOrderId,
       confirmOrderLineCount,
+      onCancelOrder,
       lineNumber
     };
   },

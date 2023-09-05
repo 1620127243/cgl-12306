@@ -29,4 +29,5 @@ public class BusinessApplication {
         LOG.info("测试地址: \thttp://127.0.0.1:{}{}/hello", env.getProperty("server.port"), env.getProperty("server.servlet.context-path"));
 
     }
+
 }
